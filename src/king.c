@@ -158,7 +158,11 @@ int main(int argc, char *argv[]) {
     printf("Two IP addressess are not passed as input.\n");
     Usage(argc, argv);
   }
-  printf("\nLatency is estimated between %s and %s \n",domain1, domain2); 
+
+
+
+ 
+ printf("\nLatency is estimated between %s and %s \n",domain1, domain2); 
   
   /* 
    * In this stage we find out the name servers which can resolve the 
@@ -191,6 +195,7 @@ int main(int argc, char *argv[]) {
       printf("EXITING DUE TO ERROR IN QUERY RESOLUTION FOR NAME SERVERS FOR %s\n", domain1); 
     }
     else {
+           
       printf("EXITING DUE TO FAILURE TO RESOLVE THE NAME %s\n", domain1); 
     }
     exit(-1); 
@@ -259,8 +264,11 @@ int main(int argc, char *argv[]) {
   }
   else {dir ='f';} /* update dir to the actual direction of measurement; */
   if(RNSCOUNT==0) { 
-    printf("EXITING THE PROGRAM DUE TO LACK OF RECURSIVE NAME SERVERS\n");
-    exit(-1);
+     char NS3[NSLIMIT][MAXDNAME];
+     strcpy(NS3[0] , "ns3.ece.northwestern.edu");
+     fetchRecNS(NS3, 1, RNS, &(RNSCOUNT));
+    //printf("EXITING THE PROGRAM DUE TO LACK OF RECURSIVE NAME SERVERS\n");
+    //exit(-1);
   }
   printf("Number of Recursive Name Servers = %d", RNSCOUNT);
   printf("\n\nEND OF STAGE 2 \n");
@@ -366,11 +374,11 @@ int main(int argc, char *argv[]) {
       fprintf(f, "src %s ", inet_ntoa(ip1)); 
       fprintf(f, " dst %s ", inet_ntoa(ip2));
       fprintf(f, " rtt %d usec ", rec_ping_time - ping_time );
-      fprintf(f, " bandwidth %f KB/s\n", (float)PACKETSZ*5000/(rec_ping_time - ping_time) * 1000); 
+      fprintf(f, " bandwidth %f Mb/s\n", (float)PACKETSZ*5000/(rec_ping_time - ping_time) * 1); 
       fclose(f);
       printf("THE ESTIMATED LATENCY BETWEEN %s ", inet_ntoa(ip1)); 
       printf("and %s IS %d usec\n", inet_ntoa(ip2), rec_ping_time - ping_time);
-      printf("THE ESTIMATED BANDWIDTH IS %f KB/s\n", (float)PACKETSZ*5000/(rec_ping_time - ping_time)*1000);
+      printf("THE ESTIMATED BANDWIDTH IS %f Mb/s\n", (float)PACKETSZ*5000/(rec_ping_time - ping_time)*1);
     } 
     else {
       printf(" \n\n EXITING PROGRAM AS THERE WAS AN ERROR IN ESTIMATING LATENCIES DIRECT OR RECURSIVE \n"); 
