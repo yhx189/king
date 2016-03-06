@@ -198,7 +198,7 @@ int main(int argc, char *argv[]) {
            
       printf("EXITING DUE TO FAILURE TO RESOLVE THE NAME %s\n", domain1); 
     }
-    //exit(-1); 
+    exit(-1); 
   } 
   for(k=0; k<nsNum; k++) {
     printf("Name Server %d: %s \n", k, NS1[k]);
@@ -223,7 +223,7 @@ int main(int argc, char *argv[]) {
     else {
       printf("EXITING DUE TO FAILURE TO RESOLVE THE NAME %s\n", domain2); 
     }
-    //exit(-1); 
+    exit(-1); 
   }
   for(k=0; k<nsNum; k++) {
     printf("Name Server %d: %s \n", k, NS2[k]);
@@ -234,7 +234,7 @@ int main(int argc, char *argv[]) {
   printf("\nChecking if there are root name servers among authoritative name servers for either end hosts\n");
   if(ContainRootNameServer(NS1, NSCOUNT1)>0 || ContainRootNameServer(NS2, NSCOUNT2)>0){
     printf("EXITING DUE TO PRESENCE OF ROOT NAME SERVER AMONG THE AUTHORITATIVE NAME SERVERS\n");
-    //exit(-1);
+    exit(-1);
   }
   printf("Check Succeeded without any failures\n");
   
@@ -341,24 +341,11 @@ int main(int argc, char *argv[]) {
     printf("\n\n\nBEGIN OF STAGE 4 \n\n");
     ping_time = INFINITY; /* Assign a very large number to ping time */
     rec_ping_time = INFINITY; /* Assign a very large number to recursive ping time */
-    
-    /* using ping only Yang */
-	
-
-
-
-    /* using ping only Yang */
-      for(k=0; k<numOfAttempts; k++){
+    for(k=0; k<numOfAttempts; k++){
       /* first find the ping time to the remote name server */
       printf("Ping Attempt %d to %s\n", k, CNS);  
       responselen = sizeof(response);
-      
-      /* Yang */
-      sprintf(domain, "%ld.%s", (rand_time.tv_usec*1000 + rand_time.tv_usec)+300,domain1);
-      if(ping_time > (n=resolve(CNS, domain, T_SOA, &response, &responselen))) {if(n>=0) ping_time=n;} 
-      //if(ping_time > (n=resolve(CNS, CNS, T_SOA, &response, &responselen))) {if(n>=0) ping_time=n;} 
-      /* Yang */
-      
+      if(ping_time > (n=resolve(CNS, CNS, T_SOA, &response, &responselen))) {if(n>=0) ping_time=n;} 
       /* 
        * Now find the recursive ping time, i.e., make the first
        * remote name server to query the second remote name server
@@ -366,20 +353,14 @@ int main(int argc, char *argv[]) {
        * the second name server
        */
       gettimeofday(&rand_time, NULL);
-      
-      /* Yang */
-      sprintf(domain, "%ld.%s", (rand_time.tv_usec)+300,domain2);
-      printf("domain is %s\n", domain);
-      //if(dir == 'r') {sprintf(domain, "%ld.%s", (rand_time.tv_usec*1000 + rand_time.tv_usec)+300,domain1); }
-      //else {sprintf(domain, "%ld.%s", (rand_time.tv_usec)+300,domain2); }
-      /* Yang */
+      if(dir == 'r') {sprintf(domain, "%ld.%s", (rand_time.tv_usec*1000 + rand_time.tv_usec)+300,domain1); }
+      else {sprintf(domain, "%ld.%s", (rand_time.tv_usec)+300,domain2); }
       printf("Recursive Ping Attempt %d from %s to %s\n", k, CNS, domain);  
       responselen = sizeof(response);
       printf("Size of Response is %d\n",responselen);
       if(rec_ping_time > (n= resolve(CNS, domain, T_SOA, &response, &responselen))) { if(n>=0) rec_ping_time=n;}
       usleep(200000);
     }
-    
     printf("\n\nEND OF STAGE 4 \n\n");
     //FILE *f;
     if(ping_time != INFINITY && rec_ping_time != INFINITY) { 
